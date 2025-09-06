@@ -13,7 +13,7 @@ class AuthService {
     final response = await http.get(
       Uri.parse("http://10.0.2.2:7000/api/health"),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 || response.statusCode != 201) {
       throw Exception('Server is down!!');
     }
     return true;
@@ -28,7 +28,7 @@ class AuthService {
     );
 
     final decoded = jsonDecode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (decoded is Map && decoded.containsKey('tokens')) {
         final tokens = decoded['tokens'];
         if (tokens is Map) {
@@ -61,7 +61,7 @@ class AuthService {
     );
 
     final decoded = jsonDecode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (decoded is Map && decoded.containsKey('tokens')) {
         final tokens = decoded['tokens'];
         if (tokens is Map) {
@@ -103,7 +103,7 @@ class AuthService {
     );
 
     final decoded = jsonDecode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (decoded is Map && decoded.containsKey('refreshToken')) {
         await prefs.setString('refreshToken', decoded['refreshToken']);
       }
@@ -130,7 +130,7 @@ class AuthService {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     } else {
       String message = "Failed to logout user";

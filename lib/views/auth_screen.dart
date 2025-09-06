@@ -16,6 +16,8 @@ class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> _submit() async {
@@ -36,6 +38,8 @@ class _AuthScreenState extends State<AuthScreen> {
           name: nameController.text,
           email: emailController.text,
           password: passwordController.text,
+          address: addressController.text,
+          phone: phoneController.text,
         ),
       );
     }
@@ -90,6 +94,24 @@ class _AuthScreenState extends State<AuthScreen> {
                         decoration: const InputDecoration(labelText: "Name"),
                         validator: (val) =>
                             val == null || val.isEmpty ? "Enter name" : null,
+                      ),
+                    if (!isLogin) const SizedBox(height: 16),
+
+                    if (!isLogin)
+                      TextFormField(
+                        controller: addressController,
+                        decoration: const InputDecoration(labelText: "Address"),
+                        validator: (val) =>
+                            val == null || val.isEmpty ? "Enter address" : null,
+                      ),
+                    if (!isLogin) const SizedBox(height: 16),
+
+                    if (!isLogin)
+                      TextFormField(
+                        controller: phoneController,
+                        decoration: const InputDecoration(labelText: "Phone"),
+                        validator: (val) =>
+                            val == null || val.isEmpty ? "Enter phone" : null,
                       ),
                     if (!isLogin) const SizedBox(height: 16),
 
