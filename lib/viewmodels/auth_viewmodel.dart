@@ -2,8 +2,11 @@ import 'package:ec_ranking/models/user_model.dart';
 import 'package:ec_ranking/services/auth_service.dart';
 import 'package:ec_ranking/services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthViewModel extends ChangeNotifier {
+  final prefs = SharedPreferencesAsync();
+
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -13,6 +16,9 @@ class AuthViewModel extends ChangeNotifier {
   UserModel? _user;
   UserModel? get user => _user;
 
+  String? accessToken;
+  String? refreshToken;
+
   ///
   Future<void> fetchUser() async {
     _isLoading = true;
@@ -21,6 +27,8 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       _user = await UserService().fetchUser();
+      accessToken = await prefs.getString('accessToken');
+      refreshToken = await prefs.getString('refreshToken');
     } catch (e) {
       _errorMessage = e.toString();
     }
@@ -36,7 +44,12 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      return await AuthService().loginUser(user);
+      if (await AuthService().loginUser(user)) {
+        await fetchUser();
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
     } catch (e) {
       _errorMessage = e.toString();
     }
@@ -53,7 +66,12 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      return await AuthService().registerUser(user);
+      if (await AuthService().registerUser(user)) {
+        await fetchUser();
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
     } catch (e) {
       _errorMessage = e.toString();
     }
@@ -64,13 +82,18 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   ///
-  Future<bool> refreshToken() async {
+  Future<bool> refreshUserToken() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      return await AuthService().refreshToken();
+      if (await AuthService().refreshToken()) {
+        await fetchUser();
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
     } catch (e) {
       _errorMessage = e.toString();
     }
@@ -87,7 +110,12 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      return await AuthService().logoutUser();
+      if (await AuthService().logoutUser()) {
+        _user = null;
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
     } catch (e) {
       _errorMessage = e.toString();
     }

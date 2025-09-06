@@ -22,7 +22,7 @@ class UserService {
     );
     final decoded = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (decoded is Map && decoded.containsKey('user')) {
         return UserModel(
           name: decoded['user']['name'],
@@ -63,7 +63,7 @@ class UserService {
     );
     final decoded = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       if (decoded is Map && decoded.containsKey('user')) {
         return UserModel(
           name: decoded['user']['name'],
@@ -109,7 +109,7 @@ class UserService {
       }),
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 || response.statusCode != 201) {
       String message = "Failed to change password";
       try {
         final decoded = jsonDecode(response.body);

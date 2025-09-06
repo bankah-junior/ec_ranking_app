@@ -11,7 +11,7 @@ class RankingService {
   Future<Map<String, dynamic>> fetchRankings() async {
     final response = await http.get(Uri.parse(_baseUrl));
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 || response.statusCode != 201) {
       throw Exception("Failed to load rankings: ${response.body}");
     }
 
@@ -37,7 +37,7 @@ class RankingService {
   Future<OverallRankingModel> fetchOverall() async {
     final response = await http.get(Uri.parse(_baseUrl));
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 || response.statusCode != 201) {
       throw Exception("Failed to load overall rankings");
     }
 
@@ -49,7 +49,7 @@ class RankingService {
   Future<List<EventRankingModel>> fetchByEvents() async {
     final response = await http.get(Uri.parse(_baseUrl));
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 || response.statusCode != 201) {
       throw Exception("Failed to load event rankings");
     }
 
