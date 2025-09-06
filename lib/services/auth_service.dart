@@ -81,18 +81,24 @@ class AuthService {
       } catch (_) {
         message = response.body;
       }
+      // print(user.toJson());
       throw Exception(message);
     }
   }
 
   /// Refresh User token
   Future<bool> refreshToken() async {
-    final String accessToken = await SharedPreferencesAsync().getString('accessToken') ?? '';
-    final String refreshToken = await SharedPreferencesAsync().getString('refreshToken') ?? '';
+    final String accessToken =
+        await SharedPreferencesAsync().getString('accessToken') ?? '';
+    final String refreshToken =
+        await SharedPreferencesAsync().getString('refreshToken') ?? '';
 
     final response = await http.post(
       Uri.parse('$baseURL/refresh'),
-      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $accessToken'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
       body: jsonEncode({'refreshToken': refreshToken}),
     );
 
