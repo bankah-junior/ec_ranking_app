@@ -36,6 +36,8 @@ class UserService {
       } else {
         return UserModel.fromJson(jsonDecode(response.body));
       }
+    } else if (response.statusCode == 401) {
+      throw Exception('Unauthorized');
     } else {
       String message = "Failed to load user";
       try {

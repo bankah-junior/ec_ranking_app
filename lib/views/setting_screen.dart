@@ -1,3 +1,4 @@
+import 'package:ec_ranking/models/user_model.dart';
 import 'package:ec_ranking/viewmodels/auth_viewmodel.dart';
 import 'package:ec_ranking/viewmodels/user_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +103,7 @@ class SettingScreen extends StatelessWidget {
                   ),
                   trailing: IconButton(
                     icon: const Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () {},
+                    onPressed: () => _showUpdateInfoDialog(context),
                   ),
                 );
               },
@@ -113,8 +114,16 @@ class SettingScreen extends StatelessWidget {
 
           // ⚙️ Account Section
           _buildSectionTitle("ACCOUNT"),
-          _buildTile("Update Info", icon: Icons.person, onTap: () {}),
-          _buildTile("Change Password", icon: Icons.lock, onTap: () {}),
+          _buildTile(
+            "Update Info",
+            icon: Icons.person,
+            onTap: () => _showUpdateInfoDialog(context),
+          ),
+          _buildTile(
+            "Change Password",
+            icon: Icons.lock,
+            onTap: () => _showChangePasswordDialog(context),
+          ),
 
           const SizedBox(height: 16),
 
@@ -202,6 +211,138 @@ class SettingScreen extends StatelessWidget {
             trailing ??
             const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
         onTap: onTap,
+      ),
+    );
+  }
+
+  void _showUpdateInfoDialog(BuildContext context) {
+    final userVM = context.read<UserViewModel>();
+    final nameController = TextEditingController(text: userVM.user?.name ?? "");
+    final addressController = TextEditingController(
+      text: userVM.user?.address ?? "",
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          "Update Info",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: "Name"),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: addressController,
+              decoration: const InputDecoration(labelText: "Address"),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade700,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text("Save"),
+            onPressed: () async {
+              await userVM.updateUser(
+                UserModel(
+                  name: nameController.text,
+                  address: addressController.text,
+                ),
+              );
+              if (context.mounted) Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final oldPasswordController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    final userVM = context.read<UserViewModel>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          "Change Password",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: oldPasswordController,
+              decoration: const InputDecoration(labelText: "Current Password"),
+              obscureText: true,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: newPasswordController,
+              decoration: const InputDecoration(labelText: "New Password"),
+              obscureText: true,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: confirmPasswordController,
+              decoration: const InputDecoration(
+                labelText: "Confirm New Password",
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Cancel"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade700,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text("Update"),
+            onPressed: () async {
+              if (newPasswordController.text !=
+                  confirmPasswordController.text) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Passwords do not match")),
+                );
+                return;
+              }
+
+              await userVM.changePassword(
+                oldPasswordController.text,
+                newPasswordController.text,
+              );
+
+              if (context.mounted) Navigator.pop(context);
+            },
+          ),
+        ],
       ),
     );
   }
