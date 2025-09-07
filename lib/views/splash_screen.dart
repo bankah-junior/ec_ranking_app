@@ -12,7 +12,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkAuth() async {
-    final authVM = context.read<AuthViewModel>(); // safe now
+    final authVM = context.read<AuthViewModel>();
     final userVM = context.read<UserViewModel>();
     await authVM.getToken();
     await userVM.fetchUser();
@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (authVM.accessToken != null && authVM.accessToken!.isNotEmpty) {
       if (!mounted) return;
       if (userVM.user != null) {
-        Navigator.pushReplacementNamed(context, '/main'); // ✅ MainLayout
+        Navigator.pushReplacementNamed(context, '/main');
       } else {
         Navigator.pushReplacementNamed(context, '/onboarding');
       }

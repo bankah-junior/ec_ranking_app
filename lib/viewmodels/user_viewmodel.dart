@@ -30,7 +30,8 @@ class UserViewModel extends ChangeNotifier {
     _errorMessage = null;
 
     try {
-      _user = await UserService().fetchUserInfo();
+      // _user = await UserService().fetchUserInfo();
+      setUser(await UserService().fetchUserInfo());
       accessToken = await prefs.getString('accessToken');
       refreshToken = await prefs.getString('refreshToken');
     } catch (e) {
