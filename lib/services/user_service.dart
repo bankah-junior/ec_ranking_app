@@ -3,21 +3,24 @@ import 'package:ec_ranking/models/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-const baseURL = 'http://10.0.2.2:7000/api/users';
+const baseURL = 'https://xxlrn8p4-7000.uks1.devtunnels.ms/api/users';
 
 class UserService {
   final prefs = SharedPreferencesAsync();
 
   /// Fetch User Info
-  Future<UserModel> fetchUser() async {
-    final String accessToken =
-        await SharedPreferencesAsync().getString('accessToken') ?? '';
+  Future<UserModel> fetchUserInfo() async {
+    final String accessToken = await prefs.getString('accessToken') ?? '';
 
     final response = await http.get(
       Uri.parse('$baseURL/me'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
       },
     );
     final decoded = jsonDecode(response.body);
@@ -50,14 +53,17 @@ class UserService {
 
   /// Update User Info
   Future<UserModel> updateUser(UserModel user) async {
-    final String accessToken =
-        await SharedPreferencesAsync().getString('accessToken') ?? '';
+    final String accessToken = await prefs.getString('accessToken') ?? '';
 
     final response = await http.patch(
       Uri.parse('$baseURL/me'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
       },
       body: jsonEncode(user.toJson()),
     );
@@ -94,14 +100,17 @@ class UserService {
     String currentPassword,
     String newPassword,
   ) async {
-    final String accessToken =
-        await SharedPreferencesAsync().getString('accessToken') ?? '';
+    final String accessToken = await prefs.getString('accessToken') ?? '';
 
     final response = await http.patch(
       Uri.parse('$baseURL/change-password'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
       },
       body: jsonEncode({
         'currentPassword': currentPassword,

@@ -1,3 +1,6 @@
+import 'package:ec_ranking/viewmodels/auth_viewmodel.dart';
+import 'package:ec_ranking/viewmodels/user_viewmodel.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -8,13 +11,31 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Future<void> _checkAuth() async {
+    final authVM = context.read<AuthViewModel>(); // safe now
+    final userVM = context.read<UserViewModel>();
+    await authVM.getToken();
+    await userVM.fetchUser();
+
+    if (!mounted) return;
+
+    if (authVM.accessToken != null && authVM.accessToken!.isNotEmpty) {
+      if (!mounted) return;
+      if (userVM.user != null) {
+        Navigator.pushReplacementNamed(context, '/main'); // ✅ MainLayout
+      } else {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      }
+    } else {
+      Navigator.pushReplacementNamed(context, '/onboarding');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/onboarding');
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(seconds: 2), _checkAuth);
     });
   }
 
@@ -26,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.bar_chart_rounded, color: Colors.white, size: 80),
+            const Icon(Icons.bar_chart_rounded, color: Colors.white, size: 80),
             const SizedBox(height: 20),
             const Text(
               "Economic Calendar Ranking",

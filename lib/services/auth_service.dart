@@ -3,7 +3,7 @@ import 'package:ec_ranking/models/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-const baseURL = 'http://10.0.2.2:7000/api/auth';
+const baseURL = 'https://xxlrn8p4-7000.uks1.devtunnels.ms/api/auth';
 
 class AuthService {
   final prefs = SharedPreferencesAsync();
@@ -11,7 +11,14 @@ class AuthService {
   /// Check if server is online
   Future<bool> healthCheck() async {
     final response = await http.get(
-      Uri.parse("http://10.0.2.2:7000/api/health"),
+      Uri.parse("https://xxlrn8p4-7000.uks1.devtunnels.ms/api/health"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+      },
     );
     if (response.statusCode != 200 || response.statusCode != 201) {
       throw Exception('Server is down!!');
@@ -23,7 +30,13 @@ class AuthService {
   Future<bool> registerUser(UserModel user) async {
     final response = await http.post(
       Uri.parse('$baseURL/register'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+      },
       body: jsonEncode(user.toJson()),
     );
 
@@ -56,7 +69,13 @@ class AuthService {
   Future<bool> loginUser(UserModel user) async {
     final response = await http.post(
       Uri.parse('$baseURL/login'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+      },
       body: jsonEncode(user.toJson()),
     );
 
@@ -98,6 +117,10 @@ class AuthService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
       },
       body: jsonEncode({'refreshToken': refreshToken}),
     );
@@ -127,10 +150,18 @@ class AuthService {
   Future<bool> logoutUser() async {
     final response = await http.post(
       Uri.parse('$baseURL/logout'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+      },
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      await SharedPreferencesAsync().remove('accessToken');
+      await SharedPreferencesAsync().remove('refreshToken');
       return true;
     } else {
       String message = "Failed to logout user";
