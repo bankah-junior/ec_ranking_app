@@ -14,19 +14,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, String>> _pages = [
     {
       "title": "Welcome to EconRank 📊",
-      "subtitle": "Find the most reliable economic calendar providers in one app."
+      "subtitle":
+          "Find the most reliable economic calendar providers in one app.",
     },
     {
       "title": "Compare Providers 🔍",
-      "subtitle": "See who performs best overall and in specific economic events."
+      "subtitle":
+          "See who performs best overall and in specific economic events.",
     },
     {
       "title": "Event Insights 📅",
-      "subtitle": "Check NFP, CPI, PMI, and more - with ranked provider accuracy."
+      "subtitle":
+          "Check NFP, CPI, PMI, and more - with ranked provider accuracy.",
     },
     {
       "title": "Start Your Journey 🚀",
-      "subtitle": "Let’s help you make smarter trading decisions!"
+      "subtitle": "Let’s help you make smarter trading decisions!",
     },
   ];
 
@@ -38,6 +41,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } else {
       Navigator.pushReplacementNamed(context, '/auth');
+      // Navigator.pushReplacementNamed(context, '/main');
     }
   }
 
@@ -56,7 +60,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            
             ///
             Expanded(
               child: PageView.builder(
@@ -131,7 +134,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  
                   ///
                   if (_currentPage > 0)
                     TextButton(
@@ -143,7 +145,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     )
                   else
                     const SizedBox(width: 80), // placeholder
-
                   ///
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(

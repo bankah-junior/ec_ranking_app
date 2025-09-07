@@ -1,6 +1,6 @@
 import 'package:ec_ranking/models/user_model.dart';
 import 'package:ec_ranking/services/auth_service.dart';
-import 'package:ec_ranking/services/user_service.dart';
+import 'package:ec_ranking/viewmodels/user_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,28 +13,13 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  UserModel? _user;
-  UserModel? get user => _user;
-
   String? accessToken;
   String? refreshToken;
 
-  ///
-  Future<void> fetchUser() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      _user = await UserService().fetchUser();
-      accessToken = await prefs.getString('accessToken');
-      refreshToken = await prefs.getString('refreshToken');
-    } catch (e) {
-      _errorMessage = e.toString();
-    }
-
-    _isLoading = false;
-    notifyListeners();
+  Future<String> getToken() async {
+    accessToken = await prefs.getString('accessToken');
+    refreshToken = await prefs.getString('refreshToken');
+    return accessToken ?? '';
   }
 
   ///
@@ -45,7 +30,7 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       if (await AuthService().loginUser(user)) {
-        await fetchUser();
+        UserViewModel().setUser(user);
         _isLoading = false;
         notifyListeners();
         return true;
@@ -67,7 +52,7 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       if (await AuthService().registerUser(user)) {
-        await fetchUser();
+        UserViewModel().setUser(user);
         _isLoading = false;
         notifyListeners();
         return true;
@@ -89,7 +74,7 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       if (await AuthService().refreshToken()) {
-        await fetchUser();
+        await UserViewModel().fetchUser();
         _isLoading = false;
         notifyListeners();
         return true;
@@ -111,7 +96,7 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       if (await AuthService().logoutUser()) {
-        _user = null;
+        UserViewModel().clearUser();
         _isLoading = false;
         notifyListeners();
         return true;

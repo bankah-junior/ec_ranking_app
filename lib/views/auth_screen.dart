@@ -1,5 +1,6 @@
 import 'package:ec_ranking/models/user_model.dart';
 import 'package:ec_ranking/viewmodels/auth_viewmodel.dart';
+import 'package:ec_ranking/viewmodels/user_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authVM = context.read<AuthViewModel>();
+    final userVM = context.read<UserViewModel>();
 
     if (isLogin) {
       await authVM.login(
@@ -45,12 +47,13 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     if (authVM.errorMessage != null) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(authVM.errorMessage!)));
-    } else if (authVM.user != null) {
+    } else if (userVM.user != null) {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/main');
     }
   }
 

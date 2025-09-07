@@ -1,17 +1,24 @@
 import 'dart:convert';
+import 'package:ec_ranking/models/event_ranking_model.dart';
+import 'package:ec_ranking/models/overall_ranking_model.dart';
 import 'package:http/http.dart' as http;
-import '../models/overall_ranking_model.dart';
-import '../models/event_ranking_model.dart';
 
-const _baseUrl = "https://ec-rankings-webapp-server-new.onrender.com/api/cleanedData/getCalculatedFairRanking";
+const _baseUrl =
+    "https://ec-rankings-webapp-server-new.onrender.com/api/cleanedData/getCalculatedFairRanking";
 
 class RankingService {
-  
   /// Fetch all rankings (overall + byEvent)
   Future<Map<String, dynamic>> fetchRankings() async {
-    final response = await http.get(Uri.parse(_baseUrl));
+    final response = await http.get(Uri.parse(_baseUrl), headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods':
+          'GET,PUT,POST,DELETE'
+        });
 
-    if (response.statusCode != 200 || response.statusCode != 201) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception("Failed to load rankings: ${response.body}");
     }
 
@@ -27,17 +34,21 @@ class RankingService {
       events.add(EventRankingModel.fromJson(event, list));
     });
 
-    return {
-      "overall": overall,
-      "events": events,
-    };
+    return {"overall": overall, "events": events};
   }
 
   /// Fetch only overall rankings
   Future<OverallRankingModel> fetchOverall() async {
-    final response = await http.get(Uri.parse(_baseUrl));
+    final response = await http.get(Uri.parse(_baseUrl), headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods':
+          'GET,PUT,POST,DELETE'
+        });
 
-    if (response.statusCode != 200 || response.statusCode != 201) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception("Failed to load overall rankings");
     }
 
@@ -47,9 +58,16 @@ class RankingService {
 
   /// Fetch rankings by event
   Future<List<EventRankingModel>> fetchByEvents() async {
-    final response = await http.get(Uri.parse(_baseUrl));
+    final response = await http.get(Uri.parse(_baseUrl), headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods':
+          'GET,PUT,POST,DELETE'
+        });
 
-    if (response.statusCode != 200 || response.statusCode != 201) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception("Failed to load event rankings");
     }
 
