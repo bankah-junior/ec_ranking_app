@@ -1,10 +1,11 @@
-import 'package:ec_ranking/models/user_model.dart';
-import 'package:ec_ranking/services/user_service.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user_model.dart';
+import '../services/user_service.dart';
 
 class UserViewModel extends ChangeNotifier {
-  final prefs = SharedPreferencesAsync();
+  SharedPreferences? _prefs;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -18,73 +19,81 @@ class UserViewModel extends ChangeNotifier {
   String? accessToken;
   String? refreshToken;
 
-  /// set user info
-  void setUser(UserModel user) {
+  UserViewModel() {
+    _initPrefs();
+  }
+
+  Future<void> _initPrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+    await loadUserFromPrefs();
+  }
+
+  /// Save user both locally and to prefs
+  void setUser(UserModel user) async {
     _user = user;
+    notifyListeners();
+
+    final userJson = jsonEncode(user.toJson());
+    await _prefs?.setString('user', userJson);
+  }
+
+  /// Load user from SharedPreferences
+  Future<void> loadUserFromPrefs() async {
+    final userJson = _prefs?.getString('user');
+    if (userJson != null) {
+      _user = UserModel.fromJson(jsonDecode(userJson));
+      notifyListeners();
+    }
+  }
+
+  void clearUser() async {
+    _user = null;
+    accessToken = null;
+    refreshToken = null;
+    await _prefs?.remove('user');
     notifyListeners();
   }
 
-  ///
   Future<void> fetchUser() async {
-    _isLoading = true;
-    _errorMessage = null;
-
+    _setLoading(true);
     try {
-      // _user = await UserService().fetchUserInfo();
-      setUser(await UserService().fetchUserInfo());
-      accessToken = await prefs.getString('accessToken');
-      refreshToken = await prefs.getString('refreshToken');
+      final userInfo = await UserService().fetchUserInfo();
+      setUser(userInfo);
+
+      accessToken = _prefs?.getString('accessToken');
+      refreshToken = _prefs?.getString('refreshToken');
     } catch (e) {
       _errorMessage = e.toString();
     }
-
-    _isLoading = false;
-    notifyListeners();
+    _setLoading(false);
   }
 
-  /// set user to null
-  void clearUser() {
-    _user = null;
-    notifyListeners();
-  }
-
-  ///
   Future<void> updateUser(UserModel user) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
+    _setLoading(true);
     try {
       await UserService().updateUser(user);
       await fetchUser();
-      _isLoading = false;
-      notifyListeners();
     } catch (e) {
       _errorMessage = e.toString();
     }
-
-    _isLoading = false;
-    notifyListeners();
+    _setLoading(false);
   }
 
-  ///
   Future<void> changePassword(
     String currentPassword,
     String newPassword,
   ) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
+    _setLoading(true);
     try {
       await UserService().changePassword(currentPassword, newPassword);
-      _isLoading = false;
-      notifyListeners();
     } catch (e) {
       _errorMessage = e.toString();
     }
+    _setLoading(false);
+  }
 
-    _isLoading = false;
+  void _setLoading(bool value) {
+    _isLoading = value;
     notifyListeners();
   }
 }

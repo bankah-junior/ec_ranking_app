@@ -84,17 +84,37 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (vm.errorMessage != null) {
-            return Center(
-              child: Text(
-                "❌ ${vm.errorMessage}",
-                style: const TextStyle(color: Colors.red),
-              ),
+            return Column(
+              children: [
+                Center(
+                  child: Text(
+                    "❌ ${vm.errorMessage}",
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => _refreshData(context),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text("Retry"),
+                ),
+              ],
             );
           }
 
           final ranking = vm.overallRanking;
           if (ranking == null || ranking.toString() == "[]") {
-            return const Center(child: Text("No ranking data available."));
+            return Column(
+              children: [
+                const Center(child: Text("No ranking data available.")),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => _refreshData(context),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text("Retry"),
+                ),
+              ],
+            );
           }
 
           return RefreshIndicator(

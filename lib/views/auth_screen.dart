@@ -34,6 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
           password: passwordController.text,
         ),
       );
+      await userVM.fetchUser();
     } else {
       await authVM.register(
         UserModel(
@@ -44,6 +45,7 @@ class _AuthScreenState extends State<AuthScreen> {
           phone: phoneController.text,
         ),
       );
+      await userVM.fetchUser();
     }
 
     if (authVM.errorMessage != null) {

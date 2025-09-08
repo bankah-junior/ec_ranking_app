@@ -4,8 +4,24 @@ import 'package:ec_ranking/viewmodels/user_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
+
+  @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initAuth();
+  }
+
+  Future<void> _initAuth() async {
+    final authVM = context.read<AuthViewModel>();
+    await authVM.getToken();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +71,21 @@ class SettingScreen extends StatelessWidget {
                       tooltip: "Logout",
                       onPressed: () {
                         authVM.logout();
-                        Navigator.popAndPushNamed(context, "/auth");
                       },
                     )
-                  : const SizedBox();
+                  : Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.lock, color: Colors.blue),
+                        onPressed: () => {
+                          Navigator.pushNamed(context, '/auth'),
+                        },
+                      ),
+                    );
             },
           ),
           const SizedBox(width: 8),
@@ -70,59 +97,86 @@ class SettingScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          const SizedBox(height: 12),
-
           // 👤 Profile Card
           Card(
             color: Colors.white,
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
             elevation: 2,
             child: Consumer<UserViewModel>(
               builder: (context, userVM, child) {
-                // userVM.fetchUser();
                 final user = userVM.user;
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  leading: const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: AssetImage("assets/images/avatar.png"),
-                  ),
-                  title: Text(
-                    user?.name ?? "Guest",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    user?.email ?? "guest@example.com",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                    onPressed: () => _showUpdateInfoDialog(context),
-                  ),
-                );
+                if (user == null) {
+                  return const SizedBox();
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          leading: const CircleAvatar(
+                            radius: 28,
+                            backgroundImage: AssetImage(
+                              "assets/images/avatar.jpg",
+                            ),
+                          ),
+                          title: Text(
+                            user.name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Text(
+                            user.email,
+                            style: TextStyle(color: Colors.grey.shade800),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () => _showUpdateInfoDialog(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
             ),
           ),
 
-          const SizedBox(height: 12),
-
           // ⚙️ Account Section
-          _buildSectionTitle("ACCOUNT"),
-          _buildTile(
-            "Update Info",
-            icon: Icons.person,
-            onTap: () => _showUpdateInfoDialog(context),
-          ),
-          _buildTile(
-            "Change Password",
-            icon: Icons.lock,
-            onTap: () => _showChangePasswordDialog(context),
+          Consumer<UserViewModel>(
+            builder: (context, userVM, child) {
+              // userVM.fetchUser();
+              final user = userVM.user;
+              if (user == null) {
+                return const SizedBox();
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionTitle("ACCOUNT"),
+                    _buildTile(
+                      "Update Info",
+                      icon: Icons.person,
+                      onTap: () => _showUpdateInfoDialog(context),
+                    ),
+                    _buildTile(
+                      "Change Password",
+                      icon: Icons.lock,
+                      onTap: () => _showChangePasswordDialog(context),
+                    ),
+                  ],
+                );
+              }
+            },
           ),
 
           const SizedBox(height: 16),

@@ -22,6 +22,11 @@ class _EventsScreenState extends State<EventsScreen> {
     });
   }
 
+  Future<void> _refreshData(BuildContext context) async {
+    final vm = Provider.of<EventRankingViewModel>(context, listen: false);
+    vm.fetchEventRankings();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,18 +100,36 @@ class _EventsScreenState extends State<EventsScreen> {
           }
 
           if (vm.errorMessage != null) {
-            return Center(
-              child: Text(
-                "❌ ${vm.errorMessage}",
-                style: const TextStyle(color: Colors.red),
-              ),
+            return Column(
+              children: [
+                Center(
+                  child: Text(
+                    "❌ ${vm.errorMessage}",
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => _refreshData(context),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text("Retry"),
+                ),
+              ],
             );
           }
 
           final events = vm.eventRankings;
           if (events.isEmpty) {
-            return const Center(
-              child: Text("No event ranking data available."),
+            return Column(
+              children: [
+                const Center(child: Text("No event ranking data available.")),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => _refreshData(context),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text("Retry"),
+                ),
+              ],
             );
           }
 

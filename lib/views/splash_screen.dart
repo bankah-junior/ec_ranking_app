@@ -1,6 +1,6 @@
-import 'package:ec_ranking/viewmodels/auth_viewmodel.dart';
 import 'package:ec_ranking/viewmodels/user_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -11,31 +11,23 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Future<void> _checkAuth() async {
-    final authVM = context.read<AuthViewModel>();
-    final userVM = context.read<UserViewModel>();
-    await authVM.getToken();
-    await userVM.fetchUser();
-
-    if (!mounted) return;
-
-    if (authVM.accessToken != null && authVM.accessToken!.isNotEmpty) {
-      if (!mounted) return;
-      if (userVM.user != null) {
-        Navigator.pushReplacementNamed(context, '/main');
-      } else {
-        Navigator.pushReplacementNamed(context, '/onboarding');
-      }
-    } else {
-      Navigator.pushReplacementNamed(context, '/onboarding');
-    }
-  }
+  final pref = SharedPreferencesAsync();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 2), _checkAuth);
+    Future.delayed(const Duration(seconds: 4), () async {
+      if (!mounted) return;
+      final userVM = context.read<UserViewModel>();
+      final prefs = SharedPreferencesAsync();
+      bool? hasOnboarded = await prefs.getBool("hasOnboarded");
+      await userVM.fetchUser();
+      if (!mounted) return;
+      if (hasOnboarded == null || hasOnboarded == false) {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      } else {
+        Navigator.pushReplacementNamed(context, '/main');
+      }
     });
   }
 

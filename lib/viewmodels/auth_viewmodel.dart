@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  final prefs = SharedPreferencesAsync();
-
+  final userVM = UserViewModel();
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -16,21 +15,26 @@ class AuthViewModel extends ChangeNotifier {
   String? accessToken;
   String? refreshToken;
 
+  /// Load tokens from SharedPreferences
   Future<String> getToken() async {
-    accessToken = await prefs.getString('accessToken');
-    refreshToken = await prefs.getString('refreshToken');
+    final prefs = SharedPreferencesAsync();
+    accessToken = await prefs.getString('accessToken') ?? '';
+    refreshToken = await prefs.getString('refreshToken') ?? '';
     return accessToken ?? '';
   }
 
-  ///
+  /// Login
   Future<bool> login(UserModel user) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      if (await AuthService().loginUser(user)) {
-        UserViewModel().setUser(user);
+      final success = await AuthService().loginUser(user);
+      if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        accessToken = prefs.getString('accessToken');
+        refreshToken = prefs.getString('refreshToken');
         _isLoading = false;
         notifyListeners();
         return true;
@@ -44,15 +48,15 @@ class AuthViewModel extends ChangeNotifier {
     return false;
   }
 
-  ///
+  /// Register
   Future<bool> register(UserModel user) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      if (await AuthService().registerUser(user)) {
-        UserViewModel().setUser(user);
+      final success = await AuthService().registerUser(user);
+      if (success) {
         _isLoading = false;
         notifyListeners();
         return true;
@@ -66,15 +70,18 @@ class AuthViewModel extends ChangeNotifier {
     return false;
   }
 
-  ///
+  /// Refresh Token
   Future<bool> refreshUserToken() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      if (await AuthService().refreshToken()) {
-        await UserViewModel().fetchUser();
+      final success = await AuthService().refreshToken();
+      if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        accessToken = prefs.getString('accessToken');
+        refreshToken = prefs.getString('refreshToken');
         _isLoading = false;
         notifyListeners();
         return true;
@@ -88,15 +95,21 @@ class AuthViewModel extends ChangeNotifier {
     return false;
   }
 
-  ///
+  /// Logout
   Future<bool> logout() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      if (await AuthService().logoutUser()) {
-        UserViewModel().clearUser();
+      final success = await AuthService().logoutUser();
+      if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('accessToken');
+        await prefs.remove('refreshToken');
+        userVM.clearUser();
+        accessToken = null;
+        refreshToken = null;
         _isLoading = false;
         notifyListeners();
         return true;

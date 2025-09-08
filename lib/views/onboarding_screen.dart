@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -33,15 +34,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     },
   ];
 
-  void _nextPage() {
+  void _nextPage() async {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.pushReplacementNamed(context, '/auth');
-      // Navigator.pushReplacementNamed(context, '/main');
+      final prefs = SharedPreferencesAsync();
+      await prefs.setBool("hasOnboarded", true);
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/main');
     }
   }
 
