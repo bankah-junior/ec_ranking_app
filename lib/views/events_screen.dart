@@ -66,10 +66,11 @@ class _EventsScreenState extends State<EventsScreen> {
           Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: PopupMenuButton<String>(
+              color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -214,6 +215,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                     child: Text(
                                       "${index + 1}",
                                       style: TextStyle(
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.blue.shade700,
                                       ),
@@ -230,7 +232,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                         Text(
                                           provider.provider,
                                           style: const TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),

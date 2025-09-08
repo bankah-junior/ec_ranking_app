@@ -74,7 +74,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       },
                     )
                   : Container(
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: const EdgeInsets.only(right: 6),
                       decoration: BoxDecoration(
                         color: Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(12),
