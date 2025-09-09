@@ -16,7 +16,7 @@ class AuthService {
     };
   }
 
-  /// ✅ Common error parser
+  /// Common error parser
   String _parseError(dynamic decoded, http.Response response, String fallback) {
     String message = fallback;
     try {
@@ -69,7 +69,7 @@ class AuthService {
     }
   }
 
-  /// ✅ Extract and save tokens + user info
+  /// Extract and save tokens + user info
   void _handleAuthSuccess(Map decoded) async {
     if (decoded.containsKey('user')) {
       final userData = decoded['user'];

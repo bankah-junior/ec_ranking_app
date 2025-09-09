@@ -20,7 +20,8 @@ class OverallRankingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _overallRanking = await _rankingService.fetchOverall();
+      final result = await _rankingService.fetchRankings();
+      _overallRanking = result["overall"] as OverallRankingModel;
     } catch (e) {
       _errorMessage = e.toString();
     }

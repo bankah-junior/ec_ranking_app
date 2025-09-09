@@ -13,14 +13,15 @@ class EventRankingViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  /// 
+  ///
   Future<void> fetchEventRankings() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _eventRankings = await _rankingService.fetchByEvents();
+      final result = await _rankingService.fetchRankings();
+      _eventRankings = result["events"] as List<EventRankingModel>;
     } catch (e) {
       _errorMessage = e.toString();
     }

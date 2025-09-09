@@ -131,7 +131,6 @@ Future<void> openLink(String url) async {
 
             Consumer<UserViewModel>(
               builder: (context, userVM, child) {
-                // userVM.fetchUser();
                 final user = userVM.user;
                 if (user == null) {
                   return const SizedBox();

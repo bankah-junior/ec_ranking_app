@@ -11,11 +11,11 @@ class UserService {
   final authService = AuthService();
 
   Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
 
-  /// 🔄 Common request wrapper with 401 retry
+  /// Common request wrapper with 401 retry
   Future<http.Response> _sendWithRetry(
     Future<http.Response> Function(String token) requestFn,
   ) async {
@@ -110,7 +110,7 @@ class UserService {
     }
   }
 
-  /// 🔎 Parse backend error message
+  /// Parse backend error message
   String _parseError(dynamic decoded, http.Response response, String fallback) {
     String message = fallback;
     try {
