@@ -147,7 +147,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     )
                   else
-                    const SizedBox(width: 80), // placeholder
+                    const SizedBox(width: 80),
+
                   ///
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(

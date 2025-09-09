@@ -1,5 +1,8 @@
 import 'package:ec_ranking/models/provider_model.dart';
 import 'package:ec_ranking/viewmodels/event_ranking_viewmodel.dart';
+import 'package:ec_ranking/widgets/app_bar_widget.dart';
+import 'package:ec_ranking/widgets/warning_message_widget.dart';
+import 'package:ec_ranking/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,37 +34,8 @@ class _EventsScreenState extends State<EventsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.calendar_today_rounded,
-                color: Colors.blue,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "Event Rankings",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-                fontFamily: "Raleway",
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBarWidget(
+        title: "Event Rankings",
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 12),
@@ -78,11 +52,11 @@ class _EventsScreenState extends State<EventsScreen> {
               itemBuilder: (context) => [
                 const PopupMenuItem(
                   value: "Score (High → Low)",
-                  child: Text("📈 Score (High → Low)"),
+                  child: Text("📉 Score (High → Low)"),
                 ),
                 const PopupMenuItem(
                   value: "Score (Low → High)",
-                  child: Text("📉 Score (Low → High)"),
+                  child: Text("📈 Score (Low → High)"),
                 ),
                 const PopupMenuItem(
                   value: "Provider (A → Z)",
@@ -101,46 +75,26 @@ class _EventsScreenState extends State<EventsScreen> {
           }
 
           if (vm.errorMessage != null) {
-            return Column(
-              children: [
-                Center(
-                  child: Text(
-                    "❌ ${vm.errorMessage}",
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () => _refreshData(context),
-                  icon: const Icon(Icons.refresh),
-                  label: const Text("Retry"),
-                ),
-              ],
+            return WarningMessageWidget(
+              text: vm.errorMessage!,
+              refreshData: () => _refreshData(context),
             );
           }
 
           final events = vm.eventRankings;
           if (events.isEmpty) {
-            return Column(
-              children: [
-                const Center(child: Text("No event ranking data available.")),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () => _refreshData(context),
-                  icon: const Icon(Icons.refresh),
-                  label: const Text("Retry"),
-                ),
-              ],
+            return WarningMessageWidget(
+              text: "No event ranking data available.",
+              refreshData: () => _refreshData(context),
             );
           }
 
-          // 👉 Tab controller for events (NFP, CPI, PMI, etc.)
+          ///
           return DefaultTabController(
             length: events.length,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 📌 Tabs for events
                 TabBar(
                   isScrollable: true,
                   labelColor: Colors.blue.shade700,
@@ -150,21 +104,18 @@ class _EventsScreenState extends State<EventsScreen> {
                       .map((event) => Tab(text: event.eventName))
                       .toList(),
                 ),
-
-                // 📊 Providers per event
                 Expanded(
                   child: TabBarView(
                     children: events.map((event) {
                       final providers = _sortProviders(event.rankings);
 
+                      ///
                       return ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: providers.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final provider = providers[index];
-
-                          // trend color & arrow
                           Color scoreColor;
                           IconData trendIcon;
                           if (provider.fmi >= 80) {
@@ -178,6 +129,7 @@ class _EventsScreenState extends State<EventsScreen> {
                             trendIcon = Icons.trending_down;
                           }
 
+                          ///
                           return GestureDetector(
                             onTap: () {
                               Navigator.pushNamed(
@@ -185,8 +137,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                 '/profile-detail',
                                 arguments: {
                                   "providerName": provider.provider,
-                                  "eventRankings":
-                                      events, // pass the whole event rankings list
+                                  "eventRankings": events,
                                 },
                               );
                             },
@@ -208,22 +159,16 @@ class _EventsScreenState extends State<EventsScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  // rank number
                                   CircleAvatar(
                                     radius: 16,
                                     backgroundColor: Colors.blue.shade50,
-                                    child: Text(
-                                      "${index + 1}",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue.shade700,
-                                      ),
+                                    child: TextWidget(
+                                      text: "${index + 1}",
+                                      fontSize: 18,
                                     ),
                                   ),
                                   const SizedBox(width: 12),
 
-                                  // provider details
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -236,6 +181,7 @@ class _EventsScreenState extends State<EventsScreen> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
+
                                         Text(
                                           "Accuracy: ${provider.fmi.toStringAsFixed(0)}%",
                                           style: TextStyle(
@@ -247,7 +193,6 @@ class _EventsScreenState extends State<EventsScreen> {
                                     ),
                                   ),
 
-                                  // score + trend
                                   Row(
                                     children: [
                                       Icon(
@@ -283,7 +228,7 @@ class _EventsScreenState extends State<EventsScreen> {
     );
   }
 
-  /// Sorting logic for providers under each event
+  ///
   List<ProviderModel> _sortProviders(List<ProviderModel> providers) {
     switch (_selectedSort) {
       case "Score (Low → High)":

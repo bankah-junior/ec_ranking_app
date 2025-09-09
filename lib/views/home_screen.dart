@@ -1,5 +1,8 @@
 import 'package:ec_ranking/models/provider_model.dart';
 import 'package:ec_ranking/viewmodels/overall_ranking_viewmodel.dart';
+import 'package:ec_ranking/widgets/app_bar_widget.dart';
+import 'package:ec_ranking/widgets/warning_message_widget.dart';
+import 'package:ec_ranking/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,38 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.bar_chart_rounded,
-                color: Colors.blue,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "Economic Rankings",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-                fontFamily: "Raleway",
-              ),
-            ),
-          ],
-        ),
-        centerTitle: true,
+      appBar: AppBarWidget(
+        title: "Economic Calendar Rankings",
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 12),
@@ -84,39 +57,21 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (vm.errorMessage != null) {
-            return Column(
-              children: [
-                Center(
-                  child: Text(
-                    "❌ ${vm.errorMessage}",
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () => _refreshData(context),
-                  icon: const Icon(Icons.refresh),
-                  label: const Text("Retry"),
-                ),
-              ],
+            return WarningMessageWidget(
+              text: vm.errorMessage!,
+              refreshData: () => _refreshData(context),
             );
           }
 
           final ranking = vm.overallRanking;
           if (ranking == null || ranking.toString() == "[]") {
-            return Column(
-              children: [
-                const Center(child: Text("No ranking data available.")),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () => _refreshData(context),
-                  icon: const Icon(Icons.refresh),
-                  label: const Text("Retry"),
-                ),
-              ],
+            return WarningMessageWidget(
+              text: "No ranking data available.",
+              refreshData: () => _refreshData(context),
             );
           }
 
+          ///
           return RefreshIndicator(
             onRefresh: () => _refreshData(context),
             child: ListView.separated(
@@ -128,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 final ProviderModel provider = ranking.rankings[index];
 
+                ///
                 return Container(
                   decoration: BoxDecoration(
                     color: Colors.blue.shade50,
@@ -141,33 +97,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     leading: CircleAvatar(
                       backgroundColor: Colors.blue.shade100,
-                      child: Text(
-                        provider.provider.isNotEmpty
-                            ? provider.provider[0] // first letter
+                      child: TextWidget(
+                        text: provider.provider.isNotEmpty
+                            ? provider.provider[0]
                             : "?",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
-                        ),
                       ),
                     ),
-                    title: Text(
-                      provider.provider,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.blue.shade900,
-                      ),
-                    ),
-                    trailing: Text(
-                      provider.fmi.toStringAsFixed(2),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade700,
-                      ),
-                    ),
+                    title: TextWidget(text: provider.provider),
+                    trailing: TextWidget(text: provider.fmi.toString()),
                   ),
                 );
               },

@@ -1,6 +1,7 @@
+import 'package:ec_ranking/models/event_ranking_model.dart';
+import 'package:ec_ranking/models/provider_model.dart';
+import 'package:ec_ranking/widgets/provider_detail_screen/stat_widget.dart';
 import 'package:flutter/material.dart';
-import '../models/event_ranking_model.dart';
-import '../models/provider_model.dart';
 
 class ProviderDetailScreen extends StatefulWidget {
   final String providerName;
@@ -21,7 +22,6 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Collect performance data for this provider across all events
     final providerPerformances = widget.eventRankings.map((event) {
       final match = event.rankings.firstWhere(
         (p) => p.provider == widget.providerName,
@@ -34,8 +34,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0.5,
-        centerTitle: true,
+        elevation: 0.0,
+        centerTitle: false,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_rounded,
@@ -79,11 +79,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
           ),
           const SizedBox(width: 8),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0),
+          child: Container(color: Colors.grey.shade200, height: 1.0),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Card with summary info
           Card(
             color: Colors.white,
             elevation: 3,
@@ -103,16 +106,19 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStat(
-                        "Events Tracked",
-                        "${providerPerformances.length}",
+                      StatWidget(
+                        value: "Events Tracked",
+                        label: "${providerPerformances.length}",
                       ),
-                      _buildStat(
-                        "Avg FMI",
-                        "${providerPerformances.isNotEmpty ? (providerPerformances.map((e) => e["fmi"] as double).reduce((a, b) => a + b) / providerPerformances.length).toStringAsFixed(1) : "0"}%",
+
+                      StatWidget(
+                        value: "Avg FMI",
+                        label:
+                            "${providerPerformances.isNotEmpty ? (providerPerformances.map((e) => e["fmi"] as double).reduce((a, b) => a + b) / providerPerformances.length).toStringAsFixed(1) : "0"}%",
                       ),
                     ],
                   ),
@@ -120,10 +126,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
               ),
             ),
           ),
-
           const SizedBox(height: 24),
 
-          // Performance table
           Text(
             "Performance Across Events",
             style: TextStyle(
@@ -149,6 +153,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                 ),
+
                 DataColumn(
                   numeric: true,
                   label: Text(
@@ -170,6 +175,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                 return DataRow(
                   cells: [
                     DataCell(Text(performance["event"].toString())),
+
                     DataCell(
                       Text(
                         "${score.toStringAsFixed(2)}%",
@@ -186,22 +192,6 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStat(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-        ),
-      ],
     );
   }
 }

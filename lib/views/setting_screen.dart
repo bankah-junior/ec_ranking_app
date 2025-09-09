@@ -1,8 +1,12 @@
 import 'package:ec_ranking/models/user_model.dart';
 import 'package:ec_ranking/viewmodels/auth_viewmodel.dart';
 import 'package:ec_ranking/viewmodels/user_viewmodel.dart';
+import 'package:ec_ranking/widgets/app_bar_widget.dart';
+import 'package:ec_ranking/widgets/setting_screen/section_title_widget.dart';
+import 'package:ec_ranking/widgets/setting_screen/tile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -23,44 +27,23 @@ class _SettingScreenState extends State<SettingScreen> {
     await authVM.getToken();
   }
 
+Future<void> openLink(String url) async {
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    throw Exception('Could not launch $url');
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.settings_outlined,
-                color: Colors.blue,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "Settings",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-                fontFamily: "Raleway",
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBarWidget(
+        title: "Settings",
         actions: [
           Consumer<AuthViewModel>(
             builder: (context, authVM, child) {
+              ///
               return authVM.accessToken != null &&
                       authVM.accessToken!.isNotEmpty
                   ? IconButton(
@@ -90,30 +73,25 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
           const SizedBox(width: 8),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(color: Colors.grey.shade200, height: 1),
-        ),
       ),
-      body: ListView(
-        children: [
-          // 👤 Profile Card
-          Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 2,
-            child: Consumer<UserViewModel>(
-              builder: (context, userVM, child) {
-                final user = userVM.user;
-                if (user == null) {
-                  return const SizedBox();
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Column(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: ListView(
+          children: [
+            Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 2,
+              child: Consumer<UserViewModel>(
+                builder: (context, userVM, child) {
+                  final user = userVM.user;
+                  if (user == null) {
+                    return const SizedBox();
+                  } else {
+                    return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ListTile(
@@ -144,127 +122,84 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                         ),
                       ],
-                    ),
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Consumer<UserViewModel>(
+              builder: (context, userVM, child) {
+                // userVM.fetchUser();
+                final user = userVM.user;
+                if (user == null) {
+                  return const SizedBox();
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SectionTitleWidget(title: "ACCOUNT"),
+                      TileWidget(
+                        title: "Update Info",
+                        icon: Icons.person,
+                        onTap: () => _showUpdateInfoDialog(context),
+                      ),
+                      TileWidget(
+                        title: "Change Password",
+                        icon: Icons.lock,
+                        onTap: () => _showChangePasswordDialog(context),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                   );
                 }
               },
             ),
-          ),
 
-          // ⚙️ Account Section
-          Consumer<UserViewModel>(
-            builder: (context, userVM, child) {
-              // userVM.fetchUser();
-              final user = userVM.user;
-              if (user == null) {
-                return const SizedBox();
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSectionTitle("ACCOUNT"),
-                    _buildTile(
-                      "Update Info",
-                      icon: Icons.person,
-                      onTap: () => _showUpdateInfoDialog(context),
-                    ),
-                    _buildTile(
-                      "Change Password",
-                      icon: Icons.lock,
-                      onTap: () => _showChangePasswordDialog(context),
-                    ),
-                  ],
-                );
-              }
-            },
-          ),
+            SectionTitleWidget(title: "ABOUT"),
+            TileWidget(title: "Version", trailing: const Text("1.0.0")),
+            TileWidget(title: "Terms of Service", onTap: () {}),
+            TileWidget(title: "Privacy Policy", onTap: () {}),
+            const SizedBox(height: 16),
 
-          const SizedBox(height: 16),
+            SectionTitleWidget(title: "SUPPORT"),
+            TileWidget(
+              title: "Provide Feedback",
+              icon: Icons.feedback,
+              onTap: () {},
+            ),
+            const SizedBox(height: 16),
 
-          // 📌 About
-          _buildSectionTitle("ABOUT"),
-          _buildTile("Version", trailing: const Text("1.0.0")),
-          _buildTile("Terms of Service", onTap: () {}),
-          _buildTile("Privacy Policy", onTap: () {}),
-
-          const SizedBox(height: 16),
-
-          // 💬 Support
-          _buildSectionTitle("SUPPORT"),
-          _buildTile("Provide Feedback", icon: Icons.feedback, onTap: () {}),
-
-          const SizedBox(height: 16),
-
-          // 🌐 API
-          _buildSectionTitle("API"),
-          _buildTile(
-            "Provider",
-            trailing: Text(
-              "FinData",
-              style: TextStyle(
-                color: Colors.blue.shade700,
-                fontWeight: FontWeight.w600,
+            SectionTitleWidget(title: "API"),
+            TileWidget(
+              title: "Provider",
+              trailing: Text(
+                "FinData",
+                style: TextStyle(
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-          _buildTile(
-            "API Version",
-            trailing: const Text(
-              "v2",
-              style: TextStyle(fontWeight: FontWeight.w600),
+            TileWidget(
+              title: "API Version",
+              trailing: const Text(
+                "v2",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 24),
 
-  /// Section Header
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey.shade600,
+            SectionTitleWidget(title: "Developer"),
+            TileWidget(
+              title: "Portfolio",
+              icon: Icons.link,
+              onTap: () => openLink('https://anthonybekoebankah.netlify.app'),
+            ),
+            const SizedBox(height: 24),
+          ],
         ),
-      ),
-    );
-  }
-
-  /// Modern Tile
-  Widget _buildTile(
-    String title, {
-    IconData? icon,
-    Widget? trailing,
-    VoidCallback? onTap,
-    Color? textColor,
-    Color? iconColor,
-  }) {
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 1,
-      child: ListTile(
-        leading: icon != null
-            ? Icon(icon, color: iconColor ?? Colors.blue.shade700)
-            : null,
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: textColor ?? Colors.black,
-          ),
-        ),
-        trailing:
-            trailing ??
-            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
-        onTap: onTap,
       ),
     );
   }
@@ -311,7 +246,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text("Save"),
+            child: const Text("Save", style: TextStyle(color: Colors.white)),
             onPressed: () async {
               await userVM.updateUser(
                 UserModel(
@@ -378,7 +313,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text("Update"),
+            child: const Text("Update", style: TextStyle(color: Colors.white)),
             onPressed: () async {
               if (newPasswordController.text !=
                   confirmPasswordController.text) {
