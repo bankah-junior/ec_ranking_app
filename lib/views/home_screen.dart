@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBarWidget(
-        title: "Economic Calendar Rankings",
+        title: "Overall Rankings",
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 12),

@@ -18,6 +18,13 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+  adaptive_icon_background: "#ffffff"  # for Android adaptive icons
+  adaptive_icon_foreground: "assets/images/logo.png"
+
 environment:
   sdk: ^3.8.1
 
@@ -39,6 +46,7 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_svg: ^2.2.0
   url_launcher: ^6.3.2
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:

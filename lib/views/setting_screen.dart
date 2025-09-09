@@ -27,12 +27,12 @@ class _SettingScreenState extends State<SettingScreen> {
     await authVM.getToken();
   }
 
-Future<void> openLink(String url) async {
-  final Uri uri = Uri.parse(url);
-  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-    throw Exception('Could not launch $url');
+  Future<void> openLink(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -127,8 +127,8 @@ Future<void> openLink(String url) async {
                 },
               ),
             ),
-            const SizedBox(height: 16),
 
+            // const SizedBox(height: 16),
             Consumer<UserViewModel>(
               builder: (context, userVM, child) {
                 final user = userVM.user;
@@ -192,7 +192,7 @@ Future<void> openLink(String url) async {
 
             SectionTitleWidget(title: "Developer"),
             TileWidget(
-              title: "Portfolio",
+              title: "Anthony Bekoe Bankah",
               icon: Icons.link,
               onTap: () => openLink('https://anthonybekoebankah.netlify.app'),
             ),

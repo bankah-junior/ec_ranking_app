@@ -62,37 +62,41 @@ Reusable widgets:
 ## 📂 Project Structure
 
 ```
-lib/
-│── main.dart                  # Entry point
-│
-├── models/                    # Data layer (Model)
-│   ├── provider_model.dart
-│   ├── provider_detail_args.dart
-│   ├── user_model.dart
-│   ├── event_ranking_model.dart
-│   └── overall_ranking_model.dart
-│
-├── services/                  # Repository / API layer
-│   ├── ranking_service.dart
-│   ├── auth_service.dart
-│   └── user_service.dart
-│
-├── viewmodels/                # Business logic (ViewModel)
-│   ├── overall_ranking_viewmodel.dart
-│   ├── auth_viewmodel.dart
-│   └── event_ranking_viewmodel.dart
-│
-├── views/                     # UI layer (View)
-│   ├── auth_screen.dart
-│   ├── splash_screen.dart
-│   ├── onboarding_screen.dart
-│   ├── home_screen.dart
-│   ├── events_screen.dart
-│   ├── provider_detail_screen.dart
-│   └── setting_screen.dart
-│
-└── widgets/                   # Reusable UI components
-    └── bottom_nav_bar.dart
+📁 lib/
+├── 📁 models/
+│   ├── 🔵 event_ranking_model.dart
+│   ├── 🔵 overall_ranking_model.dart
+│   ├── 🔵 provider_model.dart
+│   └── 🔵 user_model.dart
+├── 📁 services/
+│   ├── 🔵 auth_service.dart
+│   ├── 🔵 ranking_service.dart
+│   └── 🔵 user_service.dart
+├── 📁 viewmodels/
+│   ├── 🔵 auth_viewmodel.dart
+│   ├── 🔵 event_ranking_viewmodel.dart
+│   ├── 🔵 overall_ranking_viewmodel.dart
+│   └── 🔵 user_viewmodel.dart
+├── 📁 views/
+│   ├── 🔵 auth_screen.dart
+│   ├── 🔵 events_screen.dart
+│   ├── 🔵 home_screen.dart
+│   ├── 🔵 onboarding_screen.dart
+│   ├── 🔵 provider_detail_screen.dart
+│   ├── 🔵 setting_screen.dart
+│   └── 🔵 splash_screen.dart
+├── 📁 widgets/
+│   ├── 📁 provider_detail_screen/
+│   │   └── 🔵 stat_widget.dart
+│   ├── 📁 setting_screen/
+│   │   ├── 🔵 section_title_widget.dart
+│   │   └── 🔵 tile_widget.dart
+│   ├── 🔵 app_bar_widget.dart
+│   ├── 🔵 bottom_nav_bar.dart
+│   ├── 🔵 text_widget.dart
+│   └── 🔵 warning_message_widget.dart
+├── 🔵 main.dart
+└── 🔵 main_layout.dart
 ```
 
 ---

@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 4), () async {
+    Future.delayed(const Duration(seconds: 2), () async {
       if (!mounted) return;
       final userVM = context.read<UserViewModel>();
       final prefs = SharedPreferencesAsync();
