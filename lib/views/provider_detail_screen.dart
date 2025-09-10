@@ -85,40 +85,49 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         children: [
+          ///
+          Text(
+            "Provider Overview",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey.shade900,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          ///
           Card(
             color: Colors.white,
-            elevation: 3,
+            elevation: 4,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
             ),
+            shadowColor: const Color.fromRGBO(187, 222, 251, 0.5),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Provider Overview",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       StatWidget(
-                        value: "Events Tracked",
-                        label: "${providerPerformances.length}",
+                        icon: Icons.event_available,
+                        value: "${providerPerformances.length}",
+                        label: "Events Tracked",
+                        color: const Color.fromRGBO(30, 136, 229, 1),
+                        bgColor: const Color.fromRGBO(30, 136, 229, 0.15),
                       ),
-
                       StatWidget(
-                        value: "Avg FMI",
-                        label:
-                            "${providerPerformances.isNotEmpty ? (providerPerformances.map((e) => e["fmi"] as double).reduce((a, b) => a + b) / providerPerformances.length).toStringAsFixed(1) : "0"}%",
+                        icon: Icons.insights_rounded,
+                        value:
+                            "${providerPerformances.isNotEmpty ? (providerPerformances.map((e) => e["fmi"] as double).reduce((a, b) => a + b) / providerPerformances.length).toStringAsFixed(2) : "0"}%",
+                        label: "Avg FMI",
+                        color: const Color.fromRGBO(67, 160, 71, 1),
+                        bgColor: const Color.fromRGBO(67, 160, 71, 0.15),
                       ),
                     ],
                   ),
@@ -126,24 +135,26 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 30),
 
+          ///
           Text(
             "Performance Across Events",
             style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade800,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey.shade900,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
+          ///
           Card(
             color: Colors.white,
+            elevation: 3,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
-            elevation: 2,
             child: DataTable(
               headingRowColor: WidgetStateProperty.all(Colors.blue.shade50),
               columns: const [
@@ -165,24 +176,34 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
               rows: providerPerformances.map((performance) {
                 final score = performance["fmi"] as double;
                 Color scoreColor;
+                IconData trendIcon;
                 if (score >= 80) {
                   scoreColor = Colors.green;
+                  trendIcon = Icons.trending_up;
                 } else if (score >= 50) {
                   scoreColor = Colors.orange;
+                  trendIcon = Icons.trending_flat;
                 } else {
                   scoreColor = Colors.red;
+                  trendIcon = Icons.trending_down;
                 }
                 return DataRow(
                   cells: [
                     DataCell(Text(performance["event"].toString())),
 
                     DataCell(
-                      Text(
-                        "${score.toStringAsFixed(2)}%",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: scoreColor,
-                        ),
+                      Row(
+                        children: [
+                          Icon(trendIcon, color: scoreColor, size: 18),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${score.toStringAsFixed(2)}%",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: scoreColor,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

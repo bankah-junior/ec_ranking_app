@@ -13,16 +13,16 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: const Color.fromRGBO(255, 255, 255, 0.95),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 53, 51, 51),
-            blurRadius: 3,
-            offset: const Offset(0, 2),
+            color: const Color.fromRGBO(0, 0, 0, 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -43,22 +43,30 @@ class BottomNavBar extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 18 : 14,
+          vertical: 10,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? Colors.blue.shade50 : Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
-            Icon(icon, color: isSelected ? Colors.blue.shade700 : Colors.grey),
+            Icon(
+              icon,
+              size: 24,
+              color: isSelected ? Colors.blue.shade700 : Colors.grey.shade500,
+            ),
             if (isSelected) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Text(
                 label,
                 style: TextStyle(
                   color: Colors.blue.shade700,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
               ),

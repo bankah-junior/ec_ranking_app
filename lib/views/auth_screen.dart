@@ -69,103 +69,146 @@ class _AuthScreenState extends State<AuthScreen> {
           padding: const EdgeInsets.all(24),
           child: Card(
             color: Colors.white,
-            elevation: 6,
+            elevation: 8,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(28),
               child: Form(
                 key: _formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Icon(
-                      Icons.bar_chart_rounded,
-                      size: 50,
-                      color: Colors.blue.shade700,
+                    ///
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.bar_chart_rounded,
+                        size: 50,
+                        color: Colors.blue.shade700,
+                      ),
                     ),
                     const SizedBox(height: 20),
+
+                    ///
                     Text(
-                      isLogin ? "Login Your Account" : "Create An Account",
+                      isLogin ? "Welcome Back 👋" : "Create Your Account 🚀",
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 8),
 
-                    if (!isLogin)
-                      TextFormField(
+                    Text(
+                      isLogin
+                          ? "Login to continue your journey"
+                          : "Join us and start exploring insights",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    ///
+                    if (!isLogin) ...[
+                      _buildInputField(
                         controller: nameController,
-                        decoration: const InputDecoration(labelText: "Name"),
+                        label: "Full Name",
+                        icon: Icons.person_outline,
                         validator: (val) =>
                             val == null || val.isEmpty ? "Enter name" : null,
                       ),
-                    if (!isLogin) const SizedBox(height: 16),
-
-                    if (!isLogin)
-                      TextFormField(
+                      const SizedBox(height: 16),
+                      _buildInputField(
                         controller: addressController,
-                        decoration: const InputDecoration(labelText: "Address"),
+                        label: "Address",
+                        icon: Icons.home_outlined,
                         validator: (val) =>
                             val == null || val.isEmpty ? "Enter address" : null,
                       ),
-                    if (!isLogin) const SizedBox(height: 16),
-
-                    if (!isLogin)
-                      TextFormField(
+                      const SizedBox(height: 16),
+                      _buildInputField(
                         controller: phoneController,
-                        decoration: const InputDecoration(labelText: "Phone"),
+                        label: "Phone",
+                        icon: Icons.phone_outlined,
                         validator: (val) =>
                             val == null || val.isEmpty ? "Enter phone" : null,
                       ),
-                    if (!isLogin) const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                    ],
 
-                    TextFormField(
+                    ///
+                    _buildInputField(
                       controller: emailController,
-                      decoration: const InputDecoration(labelText: "Email"),
+                      label: "Email",
+                      icon: Icons.email_outlined,
                       validator: (val) => val == null || !val.contains('@')
-                          ? "Enter email"
+                          ? "Enter valid email"
                           : null,
                     ),
                     const SizedBox(height: 16),
 
-                    TextFormField(
+                    ///
+                    _buildInputField(
                       controller: passwordController,
+                      label: "Password",
+                      icon: Icons.lock_outline,
                       obscureText: true,
-                      decoration: const InputDecoration(labelText: "Password"),
                       validator: (val) => val == null || val.length < 6
                           ? "Password too short"
                           : null,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
 
+                    ///
                     SizedBox(
-                      width: double.infinity,
-                      height: 50,
+                      height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade700,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 12,
-                          ),
+                          padding: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                         onPressed: authVM.isLoading ? null : _submit,
-                        child: Text(
-                          isLogin ? "Login" : "Sign Up",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.blue.shade700,
+                                Colors.blue.shade400,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              isLogin ? "Login" : "Sign Up",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
+                    ///
                     TextButton(
                       onPressed: () {
                         setState(() {
@@ -176,6 +219,11 @@ class _AuthScreenState extends State<AuthScreen> {
                         isLogin
                             ? "Don’t have an account? Sign Up"
                             : "Already have an account? Login",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -183,6 +231,42 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    String? Function(String?)? validator,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.blue.shade700),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.blue.shade400, width: 1.5),
         ),
       ),
     );
