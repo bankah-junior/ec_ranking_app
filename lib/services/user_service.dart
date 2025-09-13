@@ -4,7 +4,7 @@ import 'package:ec_ranking/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-const baseURL = 'https://xxlrn8p4-7000.uks1.devtunnels.ms/api/users';
+const baseURL = 'https://auth-backend-kwr9.onrender.com/api/users';
 
 class UserService {
   final prefs = SharedPreferencesAsync();
